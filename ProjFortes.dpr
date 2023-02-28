@@ -11,7 +11,8 @@ uses
   UConfiguracoes in 'UConfiguracoes.pas' {frmConfiguracoes},
   UServidor in 'UServidor.pas',
   UFuncoes in 'UFuncoes.pas',
-  UAbastecimento in 'UAbastecimento.pas';
+  UAbastecimento in 'UAbastecimento.pas',
+  URelAbastecimentos in 'URelAbastecimentos.pas' {RelAbastecimentos};
 
 {$R *.res}
 

@@ -15,8 +15,10 @@ type TConexao = class
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
-    function getDados(SQL: string): String;
-    function ExecutaComando(SQL: string): TResult;
+    function getDados(SQL: string): String; overload;
+    function getDados(SQL: string;Params: array of variant): String; overload;
+    function ExecutaComando(SQL: string): TResult; overload;
+    function ExecutaComando(SQL: string; Params: array of variant): TResult; overload;
 end;
 
 implementation
@@ -50,11 +52,15 @@ begin
   inherited;
 end;
 
-function TConexao.ExecutaComando(SQL: string): TResult;
+function TConexao.ExecutaComando(SQL: string;
+  Params: array of variant): TResult;
 begin
-  Result.Clear;
+ Result.Clear;
   try
-    Result.RowsAffected := FFDConnection.ExecSQL(SQL);
+    if Length(Params) = 0 then
+      Result.RowsAffected := FFDConnection.ExecSQL(SQL)
+    else
+      Result.RowsAffected := FFDConnection.ExecSQL(SQL,Params);
   except
     on e: exception do
     begin
@@ -64,7 +70,7 @@ begin
   end;
 end;
 
-function TConexao.getDados(SQL: string): String;
+function TConexao.getDados(SQL: string; Params: array of variant): String;
 var FDQuery: TFDQuery;
 memTable: TFDMemTable;
 begin
@@ -74,7 +80,12 @@ begin
   try
     FDQuery.Connection := FFDConnection;
     FDQuery.FetchOptions.Unidirectional := False;
-    FDQuery.Open(SQL);
+
+    if Length(Params) = 0 then
+      FDQuery.Open(SQL)
+    else
+      FDQuery.Open(SQL,Params);
+
     FDQuery.FetchAll;
     memTable.Data := FDQuery.Data;
     Result := memTable.XMLData;
@@ -82,6 +93,17 @@ begin
     FDQuery.DisposeOf;
     memTable.DisposeOf;
   end;
+
+end;
+
+function TConexao.ExecutaComando(SQL: string): TResult;
+begin
+  Result := ExecutaComando(SQL,[]);
+end;
+
+function TConexao.getDados(SQL: string): String;
+begin
+  Result := getDados(SQL,[]);
 end;
 
 end.

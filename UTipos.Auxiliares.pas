@@ -2,9 +2,12 @@ unit UTipos.Auxiliares;
 
 interface
 
+uses Vcl.StdCtrls;
+
 Type
 
 TCombustivel = (cGasolina,cDiesel);
+TCombustiveis = set of TCombustivel;
 
 TCombustivelHelper = record helper for TCombustivel
   public
@@ -25,7 +28,26 @@ public
   property RowsAffected: Integer read FRowsAffected write FRowsAffected;
 end;
 
+TValor<T> = class
+  private
+    FValor: T;
+  public
+    constructor Create(AValue: T);
+    property Valor: T read FValor write FValor;
+
+end;
+
+TInteiro = TValor<Integer>;
+
+TComboBoxHelper = class helper for TComboBox
+  public
+    function SelectedText: string;
+    function SelectedObject: TObject;
+
+end;
+
 implementation
+
 
 { TCombustivelHelper }
 procedure TCombustivelHelper.FromInteger(Value: Integer);
@@ -55,5 +77,24 @@ begin
   FRowsAffected  := 0;
 end;
 
+
+{ TValor<T> }
+
+constructor TValor<T>.Create(AValue: T);
+begin
+  FValor := AValue;
+end;
+
+{ TComboBoxHelper }
+
+function TComboBoxHelper.SelectedObject: TObject;
+begin
+  Result := Self.Items.Objects[Self.ItemIndex];
+end;
+
+function TComboBoxHelper.SelectedText: string;
+begin
+  Result := Self.Items[Self.ItemIndex];
+end;
 
 end.
