@@ -8,7 +8,10 @@ uses
   UFrmAbastecimento in 'UFrmAbastecimento.pas' {frmAbastecimento},
   UConexao in 'UConexao.pas',
   UParametrosConexao in 'UParametrosConexao.pas',
-  UConfiguracoes in 'UConfiguracoes.pas' {frmConfiguracoes};
+  UConfiguracoes in 'UConfiguracoes.pas' {frmConfiguracoes},
+  UServidor in 'UServidor.pas',
+  UFuncoes in 'UFuncoes.pas',
+  UAbastecimento in 'UAbastecimento.pas';
 
 {$R *.res}
 

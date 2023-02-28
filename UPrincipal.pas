@@ -16,7 +16,6 @@ type
     pnlConteudo: TPanel;
     btnConfiguracoes: TButton;
     procedure btnAbastecimentoClick(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormActivate(Sender: TObject);
     procedure btnConfiguracoesClick(Sender: TObject);
   private
@@ -52,19 +51,6 @@ begin
   Existe := FileExists('fortes.conf');
   btnRelatorio.Enabled := Existe;
   btnAbastecimento.Enabled := Existe;
-end;
-
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if ssAlt in Shift then
-    if key in [48..57,96..105] then
-    begin
-      if key > 57 then
-        key := key - 48;
-      showmessage(char(key));
-    end;
-
 end;
 
 end.

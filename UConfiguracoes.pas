@@ -78,7 +78,7 @@ end;
 procedure TfrmConfiguracoes.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-CanClose := MessageDlg('Deseja realmente sair?',mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],0) = mrYes;
+  CanClose := MessageDlg('Deseja realmente sair?',mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],0) = mrYes;
 end;
 
 procedure TfrmConfiguracoes.FormCreate(Sender: TObject);

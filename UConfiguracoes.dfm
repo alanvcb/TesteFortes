@@ -11,6 +11,7 @@ object frmConfiguracoes: TfrmConfiguracoes
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -96,7 +97,6 @@ object frmConfiguracoes: TfrmConfiguracoes
     Color = cl3DLight
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 411
     object Label7: TLabel
       Left = 33
       Top = 0
@@ -177,7 +177,6 @@ object frmConfiguracoes: TfrmConfiguracoes
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    TextHint = '0,000'
   end
   object edtPorta: TEdit
     Left = 106
@@ -189,9 +188,9 @@ object frmConfiguracoes: TfrmConfiguracoes
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
+    NumbersOnly = True
     ParentFont = False
     TabOrder = 2
-    TextHint = '0,00'
   end
   object edtUsuario: TEdit
     Left = 106
@@ -205,7 +204,6 @@ object frmConfiguracoes: TfrmConfiguracoes
     Font.Style = []
     ParentFont = False
     TabOrder = 3
-    TextHint = '0,0000'
   end
   object edtSenha: TEdit
     Left = 106
@@ -218,8 +216,8 @@ object frmConfiguracoes: TfrmConfiguracoes
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    PasswordChar = '*'
     TabOrder = 4
-    TextHint = '0,000'
   end
   object edtBase: TButtonedEdit
     Left = 106
@@ -248,7 +246,6 @@ object frmConfiguracoes: TfrmConfiguracoes
     Color = cl3DLight
     ParentBackground = False
     TabOrder = 6
-    ExplicitTop = 221
     object imgSalvar: TImage
       Left = 264
       Top = 0
@@ -315,7 +312,7 @@ object frmConfiguracoes: TfrmConfiguracoes
     Left = 336
     Top = 80
     Bitmap = {
-      494C010101001000040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C010101001000040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -451,7 +448,8 @@ object frmConfiguracoes: TfrmConfiguracoes
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00010000000000000001000000000000000100000000000001FF000000000000
-      03FF000000000000FFFF000000000000}
+      03FF000000000000FFFF00000000000000000000000000000000000000000000
+      000000000000}
   end
   object OpenDlg: TOpenDialog
     DefaultExt = '*.fdb'

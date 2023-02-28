@@ -16,7 +16,6 @@ object Form1: TForm1
   OldCreateOrder = False
   WindowState = wsMaximized
   OnActivate = FormActivate
-  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object pnlMenu: TPanel
@@ -81,7 +80,6 @@ object Form1: TForm1
       Images = imgMenu
       TabOrder = 2
       OnClick = btnConfiguracoesClick
-      ExplicitTop = 98
     end
   end
   object pnlConteudo: TPanel

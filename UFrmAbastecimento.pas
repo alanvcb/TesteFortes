@@ -32,6 +32,13 @@ type
     imgCancelar: TImage;
     Image4: TImage;
     Image1: TImage;
+    FDMemTable1: TFDMemTable;
+    FDMemTable1ID: TIntegerField;
+    FDMemTable1ST_COMBUSTIVEL: TIntegerField;
+    FDMemTable1ULT_PRECO: TFloatField;
+    Panel2: TPanel;
+    Label8: TLabel;
+    Label9: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure imgCancelarClick(Sender: TObject);
     procedure Image4Click(Sender: TObject);
@@ -39,14 +46,26 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure edtVLUnitarioExit(Sender: TObject);
     procedure edtVLTotalExit(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure edtLitrosKeyPress(Sender: TObject; var Key: Char);
+    procedure edtLitrosKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure imgSalvarClick(Sender: TObject);
   private
     FLista: TListaBotao;
+    FListaControle: TArray<TControl>;
     FPrecos: TArray<Extended>;
+    //variaveis procedure e functions de propertys
     FVendaIniciada: Boolean;
     function getLitros: Extended;
     function getUnitario: Extended;
     function getTotal: Extended;
-    function FormataValor(AEdit: TEdit; Decimais: Integer): string;
+    procedure setLitros(const Value: Extended);
+    procedure setUnitario(const Value: Extended);
+    procedure setTotal(const Value: Extended);
+    procedure setVendaIniciada(const Value: boolean);
+
     procedure CalculaPorLitros;
     procedure CalculaPorUnitario;
     procedure CalculaPorTotal;
@@ -54,9 +73,11 @@ type
     procedure MontaBombas;
     procedure Clear;
     procedure EscolheBomba(ABomba: TObject);
-    procedure setLitros(const Value: Extended);
-    procedure setUnitario(const Value: Extended);
-    procedure setTotal(const Value: Extended);
+
+    procedure Cancelar;
+    procedure Salvar;
+    procedure Validar;
+    property VendaIniciada: boolean read FVendaIniciada write setVendaIniciada;
     property Litros: Extended read getLitros write setLitros;
     property VL_Unitario: Extended read getUnitario write setUnitario;
     property VL_Total: Extended read getTotal write setTotal;
@@ -71,7 +92,7 @@ var
 implementation
 
 uses
-  UTipos.Auxiliares;
+  UTipos.Auxiliares, UServidor, UFuncoes, UAbastecimento;
 
 {$R *.dfm}
 
@@ -102,9 +123,18 @@ begin
     Litros := VL_Total / VL_Unitario;
 end;
 
+procedure TfrmAbastecimento.Cancelar;
+begin
+  if not FVendaIniciada then
+    Exit;
+
+  if MessageDlg('Deseja realmente cancelar?',mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],0) = mrYes then
+    Clear;
+end;
+
 procedure TfrmAbastecimento.Clear;
 begin
-  FVendaIniciada := False;
+  VendaIniciada := False;
   FLista.SelecionaPorID(-1);
   edtDataHora.Clear;
   edtVLUnitario.Clear;
@@ -135,11 +165,23 @@ begin
   end;
 end;
 
+procedure TfrmAbastecimento.edtLitrosKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  SelectNext(Sender as TWinControl, True, True);
+end;
+
+procedure TfrmAbastecimento.edtLitrosKeyPress(Sender: TObject; var Key: Char);
+begin
+  if not CharInSet(Key,['0'..'9',FormatSettings.DecimalSeparator]) then
+    Key := #0;
+end;
+
 procedure TfrmAbastecimento.edtVLTotalExit(Sender: TObject);
 begin
-  if edtVLUnitario.Modified then
+  if edtVLTotal.Modified then
   begin
-    edtVLUnitario.Text := FormataValor(Sender as TEdit,3);
+    edtVLTotal.Text := FormataValor(Sender as TEdit,2);
     CalculaPorTotal;
   end;
 end;
@@ -157,6 +199,7 @@ procedure TfrmAbastecimento.EscolheBomba(ABomba: TObject);
 var bomba: TBotaoBomba;
 unitario: Extended;
 begin
+
   if not Assigned(ABomba) then
     Exit;
 
@@ -165,18 +208,12 @@ begin
   if unitario > 0 then
     VL_Unitario := unitario;
 
-  FVendaIniciada := True;
+  VendaIniciada := True;
+  edtLitros.SetFocus;
   setDataHora;
 end;
 
-function TfrmAbastecimento.FormataValor(AEdit: TEdit;
-  Decimais: Integer): string;
-var valor: Extended;
-begin
-  result := '';
-  if TryStrToFloat(AEdit.Text,valor) then
-    Result := FormatFloat('0.'+string.Create('0',Decimais),valor);
-end;
+
 
 procedure TfrmAbastecimento.FormClose(Sender: TObject;
   var Action: TCloseAction);
@@ -191,6 +228,34 @@ begin
   CanClose := MessageDlg('Deseja realmente sair?',mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],0) = mrYes;
 end;
 
+procedure TfrmAbastecimento.FormCreate(Sender: TObject);
+begin
+  MontaBombas;
+  FListaControle := [edtDataHora,edtLitros,edtVLUnitario,edtVLTotal,imgCancelar,imgSalvar];
+  Clear;
+end;
+
+procedure TfrmAbastecimento.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if ssAlt in Shift then
+  begin
+    if key in [48..57,96..105] then
+    begin
+      if key > 57 then
+        key := key - 48;
+      if Assigned(FLista) then
+        FLista.SelecionaPorID(StrToInt(Char(Key)));
+      key := 0;
+    end;
+  end
+  else
+  if key = VK_ESCAPE then
+    Cancelar
+  else
+    Salvar;
+end;
+
 function TfrmAbastecimento.getLitros: Extended;
 begin
   Result := StrToFloatDef(edtLitros.Text,0);
@@ -203,16 +268,17 @@ end;
 
 function TfrmAbastecimento.getUnitario: Extended;
 begin
-  Result := StrToFloatDef(edtVLTotal.Text,0);
+  Result := StrToFloatDef(edtVLUnitario.Text,0);
 end;
 
 procedure TfrmAbastecimento.imgCancelarClick(Sender: TObject);
 begin
-  if not FVendaIniciada then
-    Exit;
+  Cancelar;
+end;
 
-  if MessageDlg('Deseja realmente cancelar?',mtConfirmation,[TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo],0) = mrYes then
-    Clear;
+procedure TfrmAbastecimento.imgSalvarClick(Sender: TObject);
+begin
+  Salvar;
 end;
 
 procedure TfrmAbastecimento.Image4Click(Sender: TObject);
@@ -229,11 +295,12 @@ begin
 
   FLista := TListaBotao.Create;
   FLista.Images := imgCombustivel;
+  FLista.Parent := sbxBombas;
   FLista.OnClick := EscolheBomba;
 
-  mtBombas := TFDMemTable.Create(nil);
+  mtBombas := TFDMemTable.Create(Self);
   try
-    //mtBombas.Data := Servidor.getBombas;
+    mtBombas.XMLData := Servidor.getBombas;
     mtBombas.First;
     while not mtBombas.Eof do
     begin
@@ -250,6 +317,32 @@ begin
 
 end;
 
+procedure TfrmAbastecimento.Salvar;
+var Abastecimento: TAbastecimento;
+Result: TResult;
+begin
+  //a imagem não dispara o onexit
+  if ActiveControl is TEdit then
+    if Assigned((ActiveControl as TEdit).OnExit) then
+      (ActiveControl as TEdit).OnExit(ActiveControl);
+      
+  Validar;
+  
+  Abastecimento := TAbastecimento.Create;
+  Abastecimento.ID_Bomba := FLista.Selecionado.ID_Bomba;
+  Abastecimento.QT_Litros := Litros;
+  Abastecimento.VL_Unitario := VL_Unitario;
+  Abastecimento.VL_Total := VL_Total;
+  Abastecimento.DataHora := StrToDateTimeDef(edtDataHora.Text,Now);
+
+  Result := Servidor.setAbastecimento(Abastecimento);
+  
+  if Result.Return_Code <> 0 then
+    raise Exception.Create('Houve um erro ao gravar : '+Result.Error_Message)
+  else
+    VendaIniciada := False;
+end;
+
 procedure TfrmAbastecimento.setDataHora;
 begin
   edtDataHora.Text := FormatDateTime(FormatSettings.ShortDateFormat+' '+FormatSettings.LongTimeFormat,Now);
@@ -263,6 +356,45 @@ end;
 procedure TfrmAbastecimento.setUnitario(const Value: Extended);
 begin
   edtVLUnitario.Text := FormatFloat('0.000',Value);
+end;
+
+procedure TfrmAbastecimento.setVendaIniciada(const Value: boolean);
+var i: integer;
+begin
+  FVendaIniciada := Value;
+  for I := Low(FListaControle) to High(FListaControle) do
+    if FVendaIniciada then
+      Habilita(FListaControle[i])
+    else
+      Desabilita(FListaControle[i]);
+end;
+
+procedure TfrmAbastecimento.Validar;
+begin
+  if not FVendaIniciada then
+    raise Exception.Create('Não é possivel salvar uma venda não iniciada');
+    
+  if FLista.Selecionado = nil then
+    raise Exception.Create('É necessário escolher uma bomba antes de salvar');
+
+  if Litros = 0 then
+  begin
+    edtLitros.SetFocus;
+    raise Exception.Create('Não é permitido quantidade de litros zerada');
+  end;
+
+  if VL_Unitario = 0 then
+  begin
+    edtVLUnitario.SetFocus;
+    raise Exception.Create('Não é permitido valor unitário zerado');
+  end;
+
+  if VL_Total = 0 then
+  begin
+    edtVLTotal.SetFocus;
+    raise Exception.Create('Não é permitido valor total zerado');
+  end;
+          
 end;
 
 procedure TfrmAbastecimento.setTotal(const Value: Extended);

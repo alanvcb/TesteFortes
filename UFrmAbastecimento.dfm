@@ -4,7 +4,7 @@ object frmAbastecimento: TfrmAbastecimento
   Cursor = crHandPoint
   BorderStyle = bsToolWindow
   Caption = 'Abastecimentos'
-  ClientHeight = 378
+  ClientHeight = 398
   ClientWidth = 405
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,9 +15,10 @@ object frmAbastecimento: TfrmAbastecimento
   KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  WindowState = wsMaximized
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object Label3: TLabel
@@ -27,6 +28,7 @@ object frmAbastecimento: TfrmAbastecimento
     Height = 19
     Alignment = taRightJustify
     Caption = 'Data/Hora:'
+    FocusControl = edtDataHora
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -41,6 +43,7 @@ object frmAbastecimento: TfrmAbastecimento
     Height = 19
     Alignment = taRightJustify
     Caption = 'Litros:'
+    FocusControl = edtLitros
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -55,6 +58,7 @@ object frmAbastecimento: TfrmAbastecimento
     Height = 19
     Alignment = taRightJustify
     Caption = 'Unitario:'
+    FocusControl = edtVLUnitario
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -69,6 +73,7 @@ object frmAbastecimento: TfrmAbastecimento
     Height = 19
     Alignment = taRightJustify
     Caption = 'Total:'
+    FocusControl = edtVLTotal
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -138,7 +143,6 @@ object frmAbastecimento: TfrmAbastecimento
     Color = cl3DLight
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 411
     object Label7: TLabel
       Left = 33
       Top = 0
@@ -154,9 +158,8 @@ object frmAbastecimento: TfrmAbastecimento
       Font.Style = [fsBold]
       ParentFont = False
       Layout = tlCenter
-      ExplicitLeft = 0
-      ExplicitWidth = 411
-      ExplicitHeight = 25
+      ExplicitWidth = 152
+      ExplicitHeight = 23
     end
     object Image1: TImage
       Left = 0
@@ -229,8 +232,6 @@ object frmAbastecimento: TfrmAbastecimento
     BevelKind = bkTile
     BorderStyle = bsNone
     TabOrder = 4
-    ExplicitTop = 48
-    ExplicitWidth = 411
     object pnlTituloBombas: TPanel
       Left = 0
       Top = 0
@@ -238,7 +239,6 @@ object frmAbastecimento: TfrmAbastecimento
       Height = 20
       Align = alTop
       TabOrder = 0
-      ExplicitWidth = 407
       object Label1: TLabel
         AlignWithMargins = True
         Left = 4
@@ -268,15 +268,15 @@ object frmAbastecimento: TfrmAbastecimento
         Margins.Top = 0
         Margins.Bottom = 0
         Align = alRight
+        AutoSize = False
         Caption = '(Alt + Num)'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clMaroon
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = [fsItalic]
         ParentFont = False
         Layout = tlCenter
-        ExplicitLeft = 347
         ExplicitHeight = 13
       end
     end
@@ -309,6 +309,8 @@ object frmAbastecimento: TfrmAbastecimento
     TabOrder = 1
     TextHint = '0,0000'
     OnExit = edtLitrosExit
+    OnKeyDown = edtLitrosKeyDown
+    OnKeyPress = edtLitrosKeyPress
   end
   object edtVLUnitario: TEdit
     Left = 170
@@ -324,6 +326,8 @@ object frmAbastecimento: TfrmAbastecimento
     TabOrder = 2
     TextHint = '0,000'
     OnExit = edtVLUnitarioExit
+    OnKeyDown = edtLitrosKeyDown
+    OnKeyPress = edtLitrosKeyPress
   end
   object edtVLTotal: TEdit
     Left = 170
@@ -339,19 +343,20 @@ object frmAbastecimento: TfrmAbastecimento
     TabOrder = 3
     TextHint = '0,00'
     OnExit = edtVLTotalExit
+    OnKeyDown = edtLitrosKeyDown
+    OnKeyPress = edtLitrosKeyPress
   end
   object Panel1: TPanel
     Left = 0
-    Top = 330
+    Top = 334
     Width = 405
-    Height = 48
+    Height = 64
     Align = alBottom
     BevelOuter = bvNone
     Color = cl3DLight
     ParentBackground = False
     TabOrder = 6
-    ExplicitTop = 359
-    ExplicitWidth = 411
+    ExplicitTop = 314
     object imgSalvar: TImage
       Left = 357
       Top = 0
@@ -408,6 +413,7 @@ object frmAbastecimento: TfrmAbastecimento
         DF20EDC07F703B1FFAEEFA4CF0B4E56BB75BD7B5D912582A695920D3695920D3
         69C90BFC0BF9D9D2A9B952CD3A0000000049454E44AE426082}
       ShowHint = True
+      OnClick = imgSalvarClick
       ExplicitLeft = 347
     end
     object imgCancelar: TImage
@@ -461,6 +467,56 @@ object frmAbastecimento: TfrmAbastecimento
       ShowHint = True
       OnClick = imgCancelarClick
       ExplicitLeft = 347
+    end
+    object Panel2: TPanel
+      Left = 0
+      Top = 48
+      Width = 405
+      Height = 16
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 0
+      ExplicitTop = 32
+      object Label8: TLabel
+        AlignWithMargins = True
+        Left = 357
+        Top = 0
+        Width = 45
+        Height = 16
+        Margins.Top = 0
+        Margins.Bottom = 0
+        Align = alRight
+        Alignment = taCenter
+        AutoSize = False
+        Caption = '(F10)'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clMaroon
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsItalic]
+        ParentFont = False
+        Layout = tlCenter
+      end
+      object Label9: TLabel
+        AlignWithMargins = True
+        Left = 3
+        Top = 0
+        Width = 45
+        Height = 16
+        Margins.Top = 0
+        Margins.Bottom = 0
+        Align = alLeft
+        Alignment = taCenter
+        AutoSize = False
+        Caption = '(ESC)'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clMaroon
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsItalic]
+        ParentFont = False
+        Layout = tlCenter
+      end
     end
   end
   object imgCombustivel: TImageList
@@ -1003,5 +1059,29 @@ object frmAbastecimento: TfrmAbastecimento
       F800013FF800013F0000000000000000F800037FF800037F0000000000000000
       FFFFFFFFFFFFFFFF000000000000000000000000000000000000000000000000
       000000000000}
+  end
+  object FDMemTable1: TFDMemTable
+    ObjectView = False
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 72
+    Top = 192
+    object FDMemTable1ID: TIntegerField
+      FieldName = 'ID'
+    end
+    object FDMemTable1ST_COMBUSTIVEL: TIntegerField
+      FieldName = 'ST_COMBUSTIVEL'
+    end
+    object FDMemTable1ULT_PRECO: TFloatField
+      FieldName = 'ULT_PRECO'
+    end
   end
 end
