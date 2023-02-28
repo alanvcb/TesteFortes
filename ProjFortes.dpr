@@ -2,7 +2,7 @@ program ProjFortes;
 
 uses
   Vcl.Forms,
-  UPrincipal in 'UPrincipal.pas' {Form1},
+  UPrincipal in 'UPrincipal.pas' {frmPrincipal},
   UTipos.Auxiliares in 'UTipos.Auxiliares.pas',
   UBomba.Botao in 'UBomba.Botao.pas',
   UFrmAbastecimento in 'UFrmAbastecimento.pas' {frmAbastecimento},
@@ -19,6 +19,6 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
   Application.Run;
 end.

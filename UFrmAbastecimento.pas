@@ -99,28 +99,46 @@ uses
 procedure TfrmAbastecimento.CalculaPorLitros;
 begin
   if VL_Unitario > 0 then
-    VL_Total := Litros * VL_Unitario
+  begin
+    VL_Total := Litros * VL_Unitario;
+    DestacaComponente(edtVLTotal,True);
+  end
   else
   if VL_Total > 0 then
+  begin
     VL_Unitario := VL_Total / Litros;
+    DestacaComponente(edtVLUnitario,True);
+  end;
 end;
 
 procedure TfrmAbastecimento.CalculaPorTotal;
 begin
   if Litros > 0 then
-    VL_Unitario := VL_Total / Litros
+  begin
+    VL_Unitario := VL_Total / Litros;
+    DestacaComponente(edtVLUnitario,True);
+  end
   else
   if VL_Unitario > 0 then
+  begin
     Litros := VL_Total / VL_Unitario;
+    DestacaComponente(edtLitros,True);
+  end;
 end;
 
 procedure TfrmAbastecimento.CalculaPorUnitario;
 begin
   if Litros > 0 then
-    VL_Total := Litros * VL_Unitario
+  begin
+    VL_Total := Litros * VL_Unitario;
+    DestacaComponente(edtVLTotal,True);
+  end
   else
   if VL_Total > 0 then
+  begin
     Litros := VL_Total / VL_Unitario;
+    DestacaComponente(edtLitros,True);
+  end;
 end;
 
 procedure TfrmAbastecimento.Cancelar;
@@ -168,12 +186,13 @@ end;
 procedure TfrmAbastecimento.edtLitrosKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  SelectNext(Sender as TWinControl, True, True);
+  if key = VK_RETURN then
+    SelectNext(Sender as TWinControl, True, True);
 end;
 
 procedure TfrmAbastecimento.edtLitrosKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not CharInSet(Key,['0'..'9',FormatSettings.DecimalSeparator]) then
+  if not CharInSet(Key,['0'..'9',FormatSettings.DecimalSeparator,#8]) then
     Key := #0;
 end;
 
@@ -253,6 +272,7 @@ begin
   if key = VK_ESCAPE then
     Cancelar
   else
+  if key = VK_F10 then
     Salvar;
 end;
 
@@ -340,7 +360,10 @@ begin
   if Result.Return_Code <> 0 then
     raise Exception.Create('Houve um erro ao gravar : '+Result.Error_Message)
   else
-    VendaIniciada := False;
+  begin
+    FPrecos[FLista.Selecionado.Combustivel.ToInteger] := VL_Unitario; //atualiza o ultimo preço do combustivel;
+    Clear;
+  end;
 end;
 
 procedure TfrmAbastecimento.setDataHora;
@@ -375,23 +398,29 @@ begin
     raise Exception.Create('Não é possivel salvar uma venda não iniciada');
     
   if FLista.Selecionado = nil then
+  begin
+    DestacaComponente(sbxBombas,False);
     raise Exception.Create('É necessário escolher uma bomba antes de salvar');
+  end;
 
   if Litros = 0 then
   begin
     edtLitros.SetFocus;
+    DestacaComponente(edtLitros,False);
     raise Exception.Create('Não é permitido quantidade de litros zerada');
   end;
 
   if VL_Unitario = 0 then
   begin
     edtVLUnitario.SetFocus;
+    DestacaComponente(edtVLUnitario,False);
     raise Exception.Create('Não é permitido valor unitário zerado');
   end;
 
   if VL_Total = 0 then
   begin
     edtVLTotal.SetFocus;
+    DestacaComponente(edtVLTotal,False);
     raise Exception.Create('Não é permitido valor total zerado');
   end;
           

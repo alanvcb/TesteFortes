@@ -356,7 +356,6 @@ object frmAbastecimento: TfrmAbastecimento
     Color = cl3DLight
     ParentBackground = False
     TabOrder = 6
-    ExplicitTop = 314
     object imgSalvar: TImage
       Left = 357
       Top = 0
@@ -476,7 +475,6 @@ object frmAbastecimento: TfrmAbastecimento
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitTop = 32
       object Label8: TLabel
         AlignWithMargins = True
         Left = 357

@@ -16,7 +16,7 @@ type TConexao = class
     constructor Create; reintroduce;
     destructor Destroy; override;
     function getDados(SQL: string): String; overload;
-    function getDados(SQL: string;Params: array of variant): String; overload;
+    function getDados(SQL: string;Params: array of variant;types: array of TFieldType): String; overload;
     function ExecutaComando(SQL: string): TResult; overload;
     function ExecutaComando(SQL: string; Params: array of variant): TResult; overload;
 end;
@@ -70,7 +70,7 @@ begin
   end;
 end;
 
-function TConexao.getDados(SQL: string; Params: array of variant): String;
+function TConexao.getDados(SQL: string; Params: array of variant;types: array of TFieldType): String;
 var FDQuery: TFDQuery;
 memTable: TFDMemTable;
 begin
@@ -84,7 +84,7 @@ begin
     if Length(Params) = 0 then
       FDQuery.Open(SQL)
     else
-      FDQuery.Open(SQL,Params);
+      FDQuery.Open(SQL,Params,Types);
 
     FDQuery.FetchAll;
     memTable.Data := FDQuery.Data;
@@ -103,7 +103,7 @@ end;
 
 function TConexao.getDados(SQL: string): String;
 begin
-  Result := getDados(SQL,[]);
+  Result := getDados(SQL,[],[]);
 end;
 
 end.

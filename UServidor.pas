@@ -27,7 +27,7 @@ function Servidor: IServidor;
 
 implementation
 
-uses UConexao;
+uses UConexao, Data.DB,System.DateUtils;
 
 
 function Servidor: IServidor;
@@ -78,6 +78,7 @@ function TServidor.getRelatorioAbastecimentos(PeriodoInicial,
   PeriodoFinal: TDate; ID_Bomba, ID_Tanque: Integer): string;
 var SQL: string;
 params: array of Variant;
+types: array of TFieldType;
 Conexao: TConexao;
 begin
   Conexao := TConexao.Create;
@@ -91,22 +92,26 @@ begin
            ' INNER JOIN TANQUE T                                      '+sLineBreak+
            '    ON T.ID = B.ID_TANQUE                                 '+sLineBreak+
            ' WHERE A.DH_ABASTECIMENTO BETWEEN :DT_INI AND :DT_FIM     '+sLineBreak;
-    params := [PeriodoInicial,PeriodoFInal];
+
+    params := [PeriodoInicial,EndOfTheDay(PeriodoFinal)];
+    types := [ftDate,ftDateTime];
 
     if ID_Bomba <> -1 then
     begin
       SQL := SQL + 'AND A.ID_BOMBA = :ID_BOMBA'+sLineBreak;
       params := params + [ID_Bomba];
+      types := types + [ftInteger];
     end;
 
-    if ID_Bomba <> -1 then
+    if ID_Tanque <> -1 then
     begin
       SQL := SQL + 'AND B.ID_TANQUE = :ID_TANQUE'+sLineBreak;
       params := params + [ID_Tanque];
+      types := types + [ftInteger];
     end;
 
     SQL := SQL +' GROUP BY 1,B.ID_TANQUE,T.ST_COMBUSTIVEL, A.ID_BOMBA';
-    Result := Conexao.getDados(SQL,params);
+    Result := Conexao.getDados(SQL,params,types);
 
   finally
     Conexao.DisposeOf;
@@ -120,7 +125,7 @@ Conexao: TConexao;
 begin
   Conexao := TConexao.Create;
   try
-    SQL := 'INSERT OR UPDATE INTO ABASTECIMENTO('+
+    SQL := 'UPDATE OR INSERT INTO ABASTECIMENTO('+
     'ID,ID_BOMBA,DH_ABASTECIMENTO,QT_LITROS,VL_UNITARIO,VL_TOTAL,VL_IMPOSTO) ' +
     'VALUES(:ID,:ID_BOMBA,:DH_ABASTECIMENTO,:QT_LITROS,:VL_UNITARIO,:VL_TOTAL,:VL_IMPOSTO) '+
     'MATCHING (ID)';
